@@ -152,19 +152,26 @@ class Set
                     UpdateHeight();
                 }
 
-                void FromArrayConstructor_ForSet(const ArraySequence<T> & array, int left, int right)
+                void FromArrayConstructor_ForSet(const ArraySequence<T> & array, int l, int r)
                 {
-                    int mid = (left + right)/2;
-                    value = array[mid];
-                    if (left < mid)
+                    int m = (l + r)/2;
+                    value = array[m];
+                    if (l < m)
                     {
                         left = new Node;
-                        
+                        left->FromArrayConstructor_ForSet(array, l, m-1);
                     }
+                    if (m < r)
+                    {
+                        right = new Node;
+                        right->FromArrayConstructor_ForSet(array, m+1, r);
+                    }
+                    UpdateHeight();
                 }
 
                 void Destructor_ForSet()
                 {
+                    
                     if (left != nullptr)
                         left->Destructor_ForSet();
                     if (right != nullptr)
@@ -337,8 +344,10 @@ class Set
         {
             if (array.GetSize() != 0)
             {
-                SortArray(array, 0, array.GetSize()-1);
-                root->FromArrayConstructor_ForSet(array, 0, array.GetSize()-1);
+                ArraySequence<T> arrayToSort(array);
+                SortArray(array, 0, arrayToSort.GetSize()-1);
+                root = new Node;
+                root->FromArrayConstructor_ForSet(arrayToSort, 0, arrayToSort.GetSize()-1);
             }
         }
 
@@ -416,12 +425,12 @@ class Set
                 delete this;
             if (set.root != nullptr)
             {
-                ArraySequence<T>* unpreparedArray = set.SetToArray();
-                ArraySequence<T>* array = new ArraySequence<T>;
-                for (int i = 0; i < unpreparedArray->GetSize(); i++)
+                ArraySequence<T> unpreparedArray = set.SetToArray();
+                ArraySequence<T> array;
+                for (int i = 0; i < unpreparedArray.GetSize(); i++)
                     if (function(unpreparedArray[i]))
                         array->Append(unpreparedArray[i]);
-                
+                this = new Set<T>(array);
             }
         }
 };
