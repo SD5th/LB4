@@ -1,7 +1,6 @@
 #include "Set.h"
 #include <cassert>
 
-
 void Test_Constructor_FromArray_Empty()
 {
     ArraySequence<int> array;
@@ -524,6 +523,7 @@ void Test_Comparsions_FirstGreater()
 
     std::cout << "Test_Comparsions_FirstGreater: OK\n";    
 }
+
 void Test_Comparsions_Equal()
 {
     Set<int> set1;
@@ -543,6 +543,7 @@ void Test_Comparsions_Equal()
 
     std::cout << "Test_Comparsions_Equal: OK\n";    
 }
+
 void Test_Comparsions_FirstEmpty()
 {
     Set<int> set1;
