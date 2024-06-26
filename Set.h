@@ -53,6 +53,25 @@ void SortArray(ArraySequence<T> & array, int left, int right)
         }
 
 template <typename T>
+void DeleteRepetitions(ArraySequence<T>& array)
+{
+    ArraySequence<T> arrayResult;
+    if (array.GetSize() != 0)
+    {
+        arrayResult.Append(array[0]);
+        for (int i = 1; i < array.GetSize(); i++)
+            if(array[i] != array[i-1])
+                arrayResult.Append(array[i]);
+        array.Resize(0);
+        array = *(new ArraySequence<T>(arrayResult));
+    }
+}
+
+template <typename T>
+struct Pair;
+
+
+template <typename T>
 class Set
 {
     private:
@@ -80,6 +99,12 @@ class Set
                     height(0)
                 { }
 
+                Node():
+                    left(nullptr),
+                    right(nullptr),
+                    height(0)
+                { }
+
                 ~Node() = default;
 
             // Insert-Search-Remove pack of functions
@@ -88,7 +113,7 @@ class Set
                     return (right == nullptr ? -1 : right->height) - (left == nullptr ? -1 : left->height);
                 }
 
-                void SwapValues(const Node* & toSwapFor)
+                void SwapValues(Node* toSwapFor)
                 {
                     T buffer = value;
                     value = toSwapFor->value;
@@ -142,13 +167,18 @@ class Set
                 }
 
             // Functions to realize Set functions
-                void CopyConstructor_ForSet(const Node* & toCopy)
+                void CopyConstructor_ForSet(const Node* toCopy)
                 {
-                    this = new Node(toCopy->value);
                     if (toCopy->left != nullptr)
+                    {
+                        left = new Node(toCopy->left->value);
                         left->CopyConstructor_ForSet(toCopy->left);
-                    if (toCopy->left != nullptr)
+                    }
+                    if (toCopy->right != nullptr)
+                    {
+                        right = new Node(toCopy->right->value);
                         right->CopyConstructor_ForSet(toCopy->right);
+                    }
                     UpdateHeight();
                 }
 
@@ -193,8 +223,19 @@ class Set
                     return right->GetMax_ForSet();
                 }
                 
+                void GetSize_ForSet(int & size)
+                {
+                    size++;
+                    if (left != nullptr)
+                        left->GetSize_ForSet(size);
+                    if (right != nullptr)
+                        right->GetSize_ForSet(size);
+                }
+
                 void Insert_ForSet(const T& toInsert)
                 {
+                    if (toInsert == value)
+                        return;
                     if (toInsert < value)
                     {
                         if (left == nullptr)
@@ -231,6 +272,7 @@ class Set
                         else
                             return right->Search_ForSet(toSearch);
                     }
+                    return false;
                 }
 
                 Node* Remove_ForSet(const T& toRemove)
@@ -241,6 +283,13 @@ class Set
                         {
                             delete this;
                             return nullptr;
+                        }
+                        else if (left != nullptr && right != nullptr)
+                        {
+                            T newValue = right->GetMin_ForSet();
+                            right = right->Remove_ForSet(newValue);
+                            value = newValue;
+                            return this;
                         }
                         else if (left != nullptr)
                         {
@@ -253,13 +302,6 @@ class Set
                             Node* toReturn = right;
                             delete this;
                             return toReturn;
-                        }
-                        else
-                        {
-                            T newValue = right->GetMin_ForSet();
-                            this = Remove_ForSet(newValue);
-                            value = newValue;
-                            return this;
                         }
                     }
 
@@ -286,30 +328,17 @@ class Set
                             UpdateHeight();
                             return this;
                         }
-                    }                
+                    }         
+                    return this;       
                 }
        
-                void SetToArray_ForSet(const ArraySequence<T>* & result)
+                void SetToArray_ForSet(ArraySequence<T> & result)
                 {
                     if (left != nullptr)
-                        SetToArray_ForSet(left);
-                    result->Append(value);
+                        left->SetToArray_ForSet(result);
+                    result.Append(value);
                     if (right != nullptr)
-                        SetToArray_ForSet(right);
-                }
-        
-                void Map_ForSet(const Node & node, T (*function)(T))
-                {
-                    if (node.left != nullptr)
-                    {
-                        left = new Node(function(node.left->value));
-                        left->Map_ForSet(node.left, function);
-                    }
-                    if (node.right != nullptr)
-                    {
-                        right = new Node(function(node.right->value));
-                        right->Map_ForSet(node.right, function);
-                    }
+                        right->SetToArray_ForSet(result);
                 }
         
                 T Reduce_ForSet(T & outputValue, T (*function)(T, T))
@@ -320,6 +349,21 @@ class Set
                     if (left != nullptr)
                         outputValue = right->Reduce_ForSet(outputValue, function);
                     return outputValue;
+                }
+        
+                void MakePairsArray_ForSet(ArraySequence<Pair<T>> & PairsArray, const int & layer)
+                {
+                    if (right != nullptr)
+                    {
+                        PairsArray.Append(Pair(value, right->value, layer));
+                        right.MakePairsArray_ForSet(PairsArray, layer+1);
+                    }
+                    
+                    if (left != nullptr)
+                    {
+                        PairsArray.Append(Pair(value, left->value, layer));
+                        left.MakePairsArray_ForSet(PairsArray, layer+1);
+                    }
                 }
         };
     
@@ -336,7 +380,10 @@ class Set
             root(nullptr)
         {
             if (toCopy.root != nullptr)
+            {
+                root = new Node(toCopy.root->value);
                 root->CopyConstructor_ForSet(toCopy.root);
+            }
         }
 
         Set(const ArraySequence<T> & array):
@@ -344,31 +391,49 @@ class Set
         {
             if (array.GetSize() != 0)
             {
-                ArraySequence<T> arrayToSort(array);
-                SortArray(array, 0, arrayToSort.GetSize()-1);
+                ArraySequence<T> arrayReady(array);
+                SortArray(arrayReady, 0, arrayReady.GetSize()-1);
+                DeleteRepetitions(arrayReady);
                 root = new Node;
-                root->FromArrayConstructor_ForSet(arrayToSort, 0, arrayToSort.GetSize()-1);
+                root->FromArrayConstructor_ForSet(arrayReady, 0, arrayReady.GetSize()-1);
             }
         }
 
         ~Set()
         {
-            root->Destructor_ForSet();
+            if (root != nullptr)
+                root->Destructor_ForSet();
         }
 
     // User functions
         T GetMin()
         {
-            return root->GetMin_ForSet();
+            if (root != nullptr)
+                return root->GetMin_ForSet();
+            else 
+                throw IndexOutOfRange("Set: GetMin. Set is empty.");
         }
 
         T GetMax()
         {
-            return root->GetMax_ForSet();
+            if (root != nullptr)
+                return root->GetMax_ForSet();
+            else 
+                throw IndexOutOfRange("Set: GetMax. Set is empty.");
+        }
+
+        int GetSize()
+        {
+            if (root == nullptr)
+                return 0;
+            int size = 0;
+            root.GetSize_ForSet(size);
+            return size;
         }
 
         void Insert(const T& toInsert)
         {
+
             if (root == nullptr)
                 root = new Node(toInsert);
             else
@@ -393,44 +458,132 @@ class Set
             }
         }
 
-        ArraySequence<T> SetToArray() // Using LNR traversal
+        void SetToArray(ArraySequence<T> & result) const  // Using LNR traversal
         {
-            ArraySequence<T> result = *(new ArraySequence<T>);
+            result.Resize(0);
             if (root != nullptr)
                 root->SetToArray_ForSet(result);
-            return result;
+        }
+    
+    // Map, Reduce, Where
+        Set<T> Map(T (*function)(T))
+        {
+            ArraySequence<T> array; 
+            SetToArray(array);
+            for (int i = 0; i < array.GetSize(); i++)
+                array[i] = function(array[i]);
+            return *(new Set<T>(array));
+        }
+        
+        T Reduce (T (*function)(T, T), const T & constant)
+        {
+            T result = constant;
+            if (root != nullptr)
+                return root->Reduce_ForSet(result, function);
+            else
+                throw IndexOutOfRange("Set: Reduce. Set is empty.");
+        }
+        
+        Set<T> Where(bool (*function)(T))
+        {
+            ArraySequence<T> unpreparedArray;
+            SetToArray(unpreparedArray);
+            ArraySequence<T> array;
+            for (int i = 0; i < unpreparedArray.GetSize(); i++)
+                if (function(unpreparedArray[i]))
+                    array.Append(unpreparedArray[i]);
+            return *(new Set<T>(array));
         }
 
-    // Map, Reduce, Where
-        void Map(const Set<T> & set, T (*function)(T))
+    // Operations with Sets
+        Set<T> Union(const Set<T> & set)
         {
-            if (root != nullptr)
-                delete this;
-            if (set.root != nullptr)
+            ArraySequence<T> array; 
+            SetToArray(array);
+            ArraySequence<T> array2;
+            set.SetToArray(array2);
+            
+            for (int i = 0; i < array2.GetSize(); i++)
+                array.Append(array2[i]);
+            return *(new Set<T>(array));
+        }
+
+        Set<T> Intersection(const Set<T> set)
+        {
+            ArraySequence<T> array1;
+            SetToArray(array1);
+            ArraySequence<T> array2;
+            set.SetToArray(array2);
+            ArraySequence<T> array;
+            int i = 0, j = 0;
+            while (i < array1.GetSize() && j < array2.GetSize())
             {
-                root = new Node(function(set.root->value));
-                root.Map_ForSet(set.root);
+                if (array1[i] == array2[j])
+                {
+                    array.Append(array1[i]);
+                    i++;
+                    j++;
+                }
+                else if (array1[i] < array2[j])
+                    i++;
+                else if (array2[j] < array1[i])
+                    j++;
             }
+            return *(new Set<T>(array));
+        }
+
+        Set<T> Substraction(const Set<T> set)
+        {
+            ArraySequence<T> array1;
+            SetToArray(array1);
+            ArraySequence<T> array2;
+            set.SetToArray(array2);
+            ArraySequence<T> array;
+            int i = 0, j = 0;
+            while (i < array1.GetSize() && j < array2.GetSize())
+            {
+                if (array1[i] == array2[j])
+                {
+                    i++;
+                    j++;
+                }
+                else if (array1[i] < array2[j])
+                {
+                    array.Append(array1[i]);
+                    i++;
+                }
+                else if (array2[j] < array1[i])
+                    j++;
+            }
+            while (i < array1.GetSize())
+            {
+                array.Append(array1[i]);
+                i++;
+            }
+            return *(new Set<T>(array));
         }
         
-        T Reduce (const Set<T> set, T (*function)(T, T), const T & constant)
+        struct Pair
         {
-            if (set.root != nullptr)
-                return set.Reduce_ForSet(constant, function);
-        }
-        
-        void Where(const Set<T> & set, bool (*function)(T))
+            T parent;
+            T child;
+            int layer;
+            Pair(T parent, T child, int layer):
+                parent(parent),
+                child(child),
+                layer(layer)
+            { }
+        };
+
+        DynamicArray<Pair> MakePairsArray()
         {
+            DynamicArray<Pair> PairsArray = *(new DynamicArray<Pair>);
             if (root != nullptr)
-                delete this;
-            if (set.root != nullptr)
             {
-                ArraySequence<T> unpreparedArray = set.SetToArray();
-                ArraySequence<T> array;
-                for (int i = 0; i < unpreparedArray.GetSize(); i++)
-                    if (function(unpreparedArray[i]))
-                        array->Append(unpreparedArray[i]);
-                this = new Set<T>(array);
+                PairsArray.Append(Pair(root->value, root. value, 0));
+                root.MakePairsArray_ForSet(PairsArray, 1);
             }
+            return PairsArray;
         }
+    
 };
