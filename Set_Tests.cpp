@@ -457,7 +457,7 @@ void Test_Intersection()
     std::cout << "Test_Intersection: OK\n";    
 }
 
-void Test_Substraction()
+void Test_Subtraction()
 {
     Set<int> set1;
     set1.Insert(1);
@@ -470,7 +470,7 @@ void Test_Substraction()
     set2.Insert(5);
     set2.Insert(7);
 
-    Set<int> substractedSet = set1.Substraction(set2);
+    Set<int> substractedSet = set1.Subtraction(set2);
     
     assert(substractedSet.Search(1) == true);
     assert(substractedSet.Search(2) == false);
@@ -479,7 +479,7 @@ void Test_Substraction()
     assert(substractedSet.Search(5) == false);
     assert(substractedSet.Search(7) == false);
 
-    std::cout << "Test_Substraction: OK\n";    
+    std::cout << "Test_Subtraction: OK\n";    
 }
 
 void Test_Comparsions_FirstLess()
@@ -595,14 +595,9 @@ void StartAllTests()
     Test_Where();
     Test_Union();
     Test_Intersection();
-    Test_Substraction();
+    Test_Subtraction();
     Test_Comparsions_FirstLess();
     Test_Comparsions_FirstGreater();
     Test_Comparsions_Equal();
     Test_Comparsions_FirstEmpty();
-}
-
-int main()
-{
-    StartAllTests();
 }

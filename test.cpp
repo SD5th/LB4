@@ -1,8 +1,26 @@
+/*
 #include <iostream>
 #include <iomanip>
 #include "Set.h"
 
 using namespace std;
+
+    void PrintTreeVisual(Node* root_local, const std::string &prefix_local = "", bool isLeft = true) 
+    {
+        if (root_local == nullptr) {
+            return;
+        }
+
+        std::cout << prefix_local;
+        std::wcout << (isLeft ? L"└── " : L"├── ");
+        std::cout << "[" << root_local->info.key << "]: " << root_local->info.item << std::endl;
+
+        PrintTreeVisual(root_local->right, prefix_local + (isLeft ? "|    " : "     "), false);
+        PrintTreeVisual(root_local->left, prefix_local + (isLeft ? "|    " : "     "), true);
+    }
+    DynamicArray<Set<int>::Pair> PairsArray = set.MakePairsArray();
+    
+    
 
 void PrintSetAsTree(Set<int> set)
 {
@@ -12,16 +30,25 @@ void PrintSetAsTree(Set<int> set)
         max = set.GetMin() * -1;
     else
         max = set.GetMax();
-    int w = 0;
+    int num_width = 0;
     if (max == 0)
-        w = 1;
+        num_width = 1;
     while (max > 0)
     {
-        w++;
+        num_width++;
         max /= 10;
     }
-    if (set.GetMin() < 0)
-        w++;
+    if (set.GetMin() < 0)        
+        num_width++;                        //(333)━━  (7)    (22)━━   (6)   (1)━━  (5)
+    int width = num_width + 4;  // ( ) ━ ━      ┗               ┗             ┗
+
+    int maxLayer = 0;
+    for (int i = 0; i< PairsArray.GetSize(); i++)
+        if (PairsArray[i].layer > maxLayer)
+            maxLayer = PairsArray[i].layer;
+    DynamicArray<string> lines
+
+    
     cout.fill(' ');
     cout << '(' << setw(w) << PairsArray[0].child << ')' << endl;
     for (int i = 1; i < PairsArray.GetSize(); i++)
@@ -51,28 +78,34 @@ void PrintSetAsTree(Set<int> set)
 
 int main()
 {
-
+    int a = ' ';
+    cout << a;
 }
-/*
-┣ ┗ ━ ┃
-(10)
-  ┣━(20)
-  ┃   ┣━(30)
-  ┃   ┃   ┗━(40)
-  ┃   ┗━(15)
-  ┗━( 5)
-      ┣━( 7)
-      ┃   ┗━( 8)
-      ┗━( 3)
-          ┣━( 4)
-          ┗━( 2)
 
-
-
-(10)━━(20)━━(30)━━(40)
-  ┃     ┗━━━(15)
-  ┗━━━( 5)━━( 7)━━( 8)
-        ┗━━━( 3)━━( 4)
-              ┗━━━( 2)
+8 8 
+8 12
+12 14
+14 15
+14 13
+12 10
+10 11
+10 9
+8 4
+4 6
+6 7
+6 5
+4 2
+2 3
+2 1
+  
+  0     1     2     3 
+( 8)━━(12)━━(14)━━(15)
+  ┃     ┃     ┗━━━(13)
+  ┃     ┗━━━(10)━━(11)
+  ┃           ┗━━━( 9)
+  ┗━━━( 4)━━( 6)━━( 7)
+        ┃     ┗━━━( 5)
+        ┗━━━( 2)━━( 3)
+              ┗━━━( 1) 
 
 */

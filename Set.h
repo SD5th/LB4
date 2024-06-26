@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include "C:\Main\Kodiki\C++\Labs\2Sem\LB2-2\Sequence.h"
 using namespace std;
@@ -532,7 +534,7 @@ class Set
             return *(new Set<T>(array));
         }
 
-        Set<T> Substraction(const Set<T> set)
+        Set<T> Subtraction(const Set<T> set)
         {
             ArraySequence<T> array1;
             SetToArray(array1);
