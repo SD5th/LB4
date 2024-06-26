@@ -432,6 +432,7 @@ void Test_Union()
 
     std::cout << "Test_Union: OK\n";    
 }
+
 void Test_Intersection()
 {
     Set<int> set1;
@@ -482,6 +483,87 @@ void Test_Substraction()
     std::cout << "Test_Substraction: OK\n";    
 }
 
+void Test_Comparsions_FirstLess()
+{
+    Set<int> set1;
+    set1.Insert(1);
+    set1.Insert(2);
+    set1.Insert(3);
+    Set<int> set2;
+    set2.Insert(1);
+    set2.Insert(2);
+    set2.Insert(3);
+    set2.Insert(4);
+    
+    assert((set1 < set2) == true);
+    assert((set1 <= set2) == true);
+    assert((set1 == set2) == false);
+    assert((set1 >= set2) == false);
+    assert((set1 > set2) == false);
+
+    std::cout << "Test_Comparsions_FirstLess: OK\n";    
+}
+
+void Test_Comparsions_FirstGreater()
+{
+    Set<int> set1;
+    set1.Insert(1);
+    set1.Insert(2);
+    set1.Insert(3);
+    set1.Insert(4);
+    Set<int> set2;
+    set2.Insert(1);
+    set2.Insert(2);
+    set2.Insert(3);
+    
+    assert((set1 < set2) == false);
+    assert((set1 <= set2) == false);
+    assert((set1 == set2) == false);
+    assert((set1 >= set2) == true);
+    assert((set1 > set2) == true);
+
+    std::cout << "Test_Comparsions_FirstGreater: OK\n";    
+}
+void Test_Comparsions_Equal()
+{
+    Set<int> set1;
+    set1.Insert(1);
+    set1.Insert(2);
+    set1.Insert(3);
+    Set<int> set2;
+    set2.Insert(1);
+    set2.Insert(2);
+    set2.Insert(3);
+    
+    assert((set1 < set2) == false);
+    assert((set1 <= set2) == true);
+    assert((set1 == set2) == true);
+    assert((set1 >= set2) == true);
+    assert((set1 > set2) == false);
+
+    std::cout << "Test_Comparsions_Equal: OK\n";    
+}
+void Test_Comparsions_FirstEmpty()
+{
+    Set<int> set1;
+
+    Set<int> set2;
+    set2.Insert(1);
+    set2.Insert(2);
+    set2.Insert(3);
+    set2.Insert(4);
+    
+    assert((set1 < set2) == true);
+    assert((set1 <= set2) == true);
+    assert((set1 == set2) == false);
+    assert((set1 >= set2) == false);
+    assert((set1 > set2) == false);
+
+    std::cout << "Test_Comparsions_FirstEmpty: OK\n";    
+}
+
+
+
 
 void StartAllTests()
 {
@@ -513,6 +595,10 @@ void StartAllTests()
     Test_Union();
     Test_Intersection();
     Test_Substraction();
+    Test_Comparsions_FirstLess();
+    Test_Comparsions_FirstGreater();
+    Test_Comparsions_Equal();
+    Test_Comparsions_FirstEmpty();
 }
 
 int main()

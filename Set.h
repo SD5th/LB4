@@ -585,5 +585,77 @@ class Set
             }
             return PairsArray;
         }
-    
+        
+        
+        
+        bool operator == (const Set<T> & setToCompare)
+        {
+            ArraySequence<T> arr1, arr2;
+            SetToArray(arr1);
+            setToCompare.SetToArray(arr2);
+            if (arr1.GetSize() != arr2.GetSize())
+                return false;
+            for (int i = 0; i < arr1.GetSize(); i++)
+                if (arr1[i] != arr2[i])
+                    return false;
+            return true;            
+        }
+
+        bool operator < (const Set<T> & setToCompare)
+        {
+            ArraySequence<T> arr1, arr2;
+            SetToArray(arr1);
+            setToCompare.SetToArray(arr2);
+            if (arr1.GetSize() >= arr2.GetSize())
+                return false;
+            int i = 0, j = 0;
+            while (i < arr1.GetSize())
+            {
+                if (arr1[i] == arr2[j])
+                {
+                    i++;
+                    j++;
+                }
+                else if (arr1[i] > arr2[j])
+                    j++;
+                else if (arr1[i] < arr2[j])
+                    return false;
+            }
+            return true;            
+        } 
+        bool operator <= (const Set<T> & setToCompare)
+        {
+            if ((*(this) < setToCompare) || (*(this) == setToCompare))
+                return true;
+            return false;       
+        } 
+
+        bool operator > (const Set<T> & setToCompare)
+        {
+            ArraySequence<T> arr1, arr2;
+            SetToArray(arr1);
+            setToCompare.SetToArray(arr2);
+            if (arr1.GetSize() <= arr2.GetSize())
+                return false;
+            int i = 0, j = 0;
+            while (j < arr2.GetSize())
+            {
+                if (arr1[i] == arr2[j])
+                {
+                    i++;
+                    j++;
+                }
+                else if (arr2[j] > arr1[i])
+                    i++;
+                else if (arr2[j] < arr1[i])
+                    return false;
+            }
+            return true;            
+        } 
+        bool operator >= (const Set<T> & setToCompare)
+        {
+            if ((*(this) > setToCompare) || (*(this) == setToCompare))
+                return true;
+            return false;       
+        } 
 };
