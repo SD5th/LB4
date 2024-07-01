@@ -902,7 +902,7 @@ int main()
     SubtractionOperation =    new Shell("Subtract Sets",          SubtractionOperation_Function,      new Connector);
     MapOperation =            new Shell("Map-ify Set",            MapOperation_Function,              new Connector);
     WhereOperation =          new Shell("Where-ify Set",          WhereOperation_Function,            new Connector);
-    Tests =                    new Shell("Tests",                  Tests_Function,                     new Connector);
+    Tests =                    new Shell("Tests",                 Tests_Function,                     new Connector);
     Exit =                    new Shell("Exit",                   Exit_Function,                      new Connector);
 
     Head->Get_Connector()->Append_Shell(ChooseType);

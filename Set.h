@@ -1,58 +1,58 @@
 #pragma once
-
 #include <iostream>
-#include "C:\Main\Kodiki\C++\Labs\2Sem\LB2-2\Sequence.h"
+#include "../LW_2sem-2/Sequence.h"
+
 using namespace std;
 
 template <typename T>
-void mergeForSortArray(ArraySequence<T> & array, int left, int mid, int right) {
-        
-            int size1 = mid - left + 1;
-            int size2 = right - mid;
+void mergeForSortArray(ArraySequence<T> & array, int left, int mid, int right) 
+{
+    int size1 = mid - left + 1;
+    int size2 = right - mid;
 
-            ArraySequence<T> subarrayLeft(size1), subarrayRight(size2);
+    ArraySequence<T> subarrayLeft(size1), subarrayRight(size2);
 
-            for (int i = 0; i < size1; i++)
-                subarrayLeft[i] = array[left + i];
-            for (int i = 0; i < size2; i++)
-                subarrayRight[i] = array[mid + 1 + i];
+    for (int i = 0; i < size1; i++)
+        subarrayLeft[i] = array[left + i];
+    for (int i = 0; i < size2; i++)
+        subarrayRight[i] = array[mid + 1 + i];
 
-            int i = 0, j = 0, k = left;
-            while (i < size1 && j < size2) {
-                if (subarrayLeft[i] <= subarrayRight[j]) {
-                    array[k] = subarrayLeft[i];
-                    i++;
-                } 
-                else {
-                    array[k] = subarrayRight[j];
-                    j++;
-                }
-                k++;
-            }
-
-            while (i < size1) {
-                array[k] = subarrayLeft[i];
-                i++;
-                k++;
-            }
-
-            while (j < size2) {
-                array[k] = subarrayRight[j];
-                j++;
-                k++;
-            }
+    int i = 0, j = 0, k = left;
+    while (i < size1 && j < size2) {
+        if (subarrayLeft[i] <= subarrayRight[j]) {
+            array[k] = subarrayLeft[i];
+            i++;
+        } 
+        else {
+            array[k] = subarrayRight[j];
+            j++;
         }
+        k++;
+    }
+
+    while (i < size1) {
+        array[k] = subarrayLeft[i];
+        i++;
+        k++;
+    }
+
+    while (j < size2) {
+        array[k] = subarrayRight[j];
+        j++;
+        k++;
+    }
+}
 
 template <typename T>
 void SortArray(ArraySequence<T> & array, int left, int right) 
-        {
-            if (left < right) {
-                int mid = left + (right - left) / 2;
-                SortArray(array, left, mid);
-                SortArray(array, mid + 1, right);
-                mergeForSortArray(array, left, mid, right);
-            }
-        }
+{
+    if (left < right) {
+        int mid = left + (right - left) / 2;
+        SortArray(array, left, mid);
+        SortArray(array, mid + 1, right);
+        mergeForSortArray(array, left, mid, right);
+    }
+}
 
 template <typename T>
 void DeleteRepetitions(ArraySequence<T>& array)
@@ -65,7 +65,7 @@ void DeleteRepetitions(ArraySequence<T>& array)
             if(array[i] != array[i-1])
                 arrayResult.Append(array[i]);
         array.Resize(0);
-        array = *(new ArraySequence<T>(arrayResult));
+        array = *(new ArraySequence<T>(arrayResult)); // ПАМЯТЬ УТЕКАЕТ
     }
 }
 
@@ -124,7 +124,7 @@ class Set
 
                 void UpdateHeight()
                 {
-                    height = max((left == nullptr ? 0 : left->height + 1), (right == nullptr ? 0 : right->height + 1));
+                    height = 1 + max((left == nullptr ? 0 : left->height), (right == nullptr ? 0 : right->height));
                 }
                 
                 void LeftRotate()
@@ -424,6 +424,13 @@ class Set
                 throw IndexOutOfRange("Set: GetMax. Set is empty.");
         }
 
+        bool IsEmpty()
+        {
+            if (root != nullptr)
+                return false;
+            return true;
+        }
+
         int GetSize()
         {
             if (root == nullptr)
@@ -587,8 +594,7 @@ class Set
             }
             return PairsArray;
         }
-        
-        
+           
         
         bool operator == (const Set<T> & setToCompare)
         {
@@ -625,6 +631,7 @@ class Set
             }
             return true;            
         } 
+        
         bool operator <= (const Set<T> & setToCompare)
         {
             if ((*(this) < setToCompare) || (*(this) == setToCompare))
@@ -654,6 +661,7 @@ class Set
             }
             return true;            
         } 
+        
         bool operator >= (const Set<T> & setToCompare)
         {
             if ((*(this) > setToCompare) || (*(this) == setToCompare))

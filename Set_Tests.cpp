@@ -564,8 +564,6 @@ void Test_Comparsions_FirstEmpty()
 }
 
 
-
-
 void StartAllTests()
 {
     Test_Constructor_FromArray_Empty();
